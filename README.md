@@ -1,3 +1,5 @@
+Ceph plugin for velero based on vanilla example.
+
 # Velero Example Plugins
 
 ![Build Status][1]
