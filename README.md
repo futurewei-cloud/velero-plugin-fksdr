@@ -1,10 +1,10 @@
-Ceph plugin for velero based on vanilla example.
+FKSDR plugin for velero based on vanilla example.
 
-# Velero Example Plugins
+# Velero FKSDR Plugins
 
 ![Build Status][1]
 
-This repository contains example plugins for Velero.
+This repository contains FKSDR plugins for Velero.
 
 ## Kinds of Plugins
 
@@ -33,7 +33,7 @@ To build the image, run
 $ make container
 ```
 
-This builds an image tagged as `velero/velero-plugin-example:master`. If you want to specify a different name or version/tag, run:
+This builds an image tagged as `ljtbbt/fksdr-plugin:master`. If you want to specify a different name or version/tag, run:
 
 ```bash
 $ IMAGE=your-repo/your-name VERSION=your-version-tag make container 
@@ -44,7 +44,7 @@ $ IMAGE=your-repo/your-name VERSION=your-version-tag make container
 To deploy your plugin image to an Velero server:
 
 1. Make sure your image is pushed to a registry that is accessible to your cluster's nodes.
-2. Run `velero plugin add <registry/image:version>`. Example with a dockerhub image: `velero plugin add velero/velero-plugin-example`.
+2. Run `velero plugin add <registry/image:version>`. Example with a dockerhub image: `velero plugin add ljtbbt/fksdr-plugin:master`.
 
 ## Using the plugins
 
@@ -64,7 +64,7 @@ Volume snapshot storage:
 
 ## Examples
 
-To run with the example plugins, do the following:
+To run with the fksdr plugins, do the following:
 
 1. Run `velero backup-location create  default --provider file` Optional: `--config bucket:<your-bucket>,prefix:<your-prefix>` to configure a bucket and/or prefix directories.
 2. Run `velero snapshot-location create example-default --provider example-volume-snapshotter`
