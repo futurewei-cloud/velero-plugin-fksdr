@@ -1,4 +1,4 @@
-module github.com/vmware-tanzu/velero-plugin-example
+module github.com/ljtbbt/fksdr-plugin
 
 go 1.14
 

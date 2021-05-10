@@ -17,17 +17,17 @@ limitations under the License.
 package main
 
 import (
+	"github.com/ljtbbt/fksdr-plugin/internal/plugin"
 	"github.com/sirupsen/logrus"
-	"github.com/vmware-tanzu/velero-plugin-example/internal/plugin"
 	"github.com/vmware-tanzu/velero/pkg/plugin/framework"
 )
 
 func main() {
 	framework.NewServer().
-		RegisterObjectStore("example.io/object-store-plugin", newObjectStorePlugin).
-		RegisterVolumeSnapshotter("example.io/volume-snapshotter-plugin", newNoOpVolumeSnapshotterPlugin).
-		RegisterRestoreItemAction("example.io/restore-plugin", newRestorePlugin).
-		RegisterBackupItemAction("example.io/backup-plugin", newBackupPlugin).
+		RegisterObjectStore("fksdr.io/object-store-plugin", newObjectStorePlugin).
+		RegisterVolumeSnapshotter("fksdr.io/volume-snapshotter-plugin", newNoOpVolumeSnapshotterPlugin).
+		RegisterRestoreItemAction("fksdr.io/restore-plugin", newRestorePlugin).
+		RegisterBackupItemAction("fksdr.io/backup-plugin", newBackupPlugin).
 		Serve()
 }
 

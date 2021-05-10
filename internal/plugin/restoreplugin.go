@@ -19,7 +19,7 @@ package plugin
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/vmware-tanzu/velero/pkg/plugin/velero"
-	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 // RestorePlugin is a restore item action plugin for Velero
@@ -36,27 +36,65 @@ func NewRestorePlugin(log logrus.FieldLogger) *RestorePlugin {
 // A RestoreItemAction's Execute function will only be invoked on items that match the returned
 // selector. A zero-valued ResourceSelector matches all resources.g
 func (p *RestorePlugin) AppliesTo() (velero.ResourceSelector, error) {
+	//res := make ( []string, 1 )
+	//res[0] = "PersistentVolume"
 	return velero.ResourceSelector{}, nil
 }
 
 // Execute allows the RestorePlugin to perform arbitrary logic with the item being restored,
 // in this case, setting a custom annotation on the item being restored.
 func (p *RestorePlugin) Execute(input *velero.RestoreItemActionExecuteInput) (*velero.RestoreItemActionExecuteOutput, error) {
-	p.log.Info("Hello from my RestorePlugin!")
+	p.log.Info("FKSDR RestorePlugin!")
 
-	metadata, err := meta.Accessor(input.Item)
-	if err != nil {
-		return &velero.RestoreItemActionExecuteOutput{}, err
+	obj, ok := input.Item.(*unstructured.Unstructured)
+
+	if !ok {
+		return velero.NewRestoreItemActionExecuteOutput(nil), nil
 	}
 
-	annotations := metadata.GetAnnotations()
-	if annotations == nil {
-		annotations = make(map[string]string)
+	log := p.log.WithFields(logrus.Fields{
+		"TonyContent": obj.Object,
+		"TonyKind":    obj.GetKind(),
+	})
+
+	log.Info("FKSDR Restore Item++++++")
+
+	if obj.GetKind() == "PersistentVolume" {
+
+		annotations := obj.GetAnnotations()
+
+		if annotations == nil {
+			annotations = make(map[string]string)
+		}
+
+		annotations["velero.io/my-restore-plugin"] = "1"
+
+		obj.SetAnnotations(annotations)
+
+		if newClusterID, ok := annotations["tony.io/dr-protected-pv"]; ok {
+
+			if newClusterID == "Huawei-DR-Protected" {
+				annotations["velero.io/my-restore-plugin"] = "Huawei-DR-Restore"
+			} else {
+				//Replace source clusterID with target cluster ID
+				unstructured.SetNestedField(obj.Object, newClusterID, "spec", "csi", "volumeAttributes", "clusterID")
+				annotations["velero.io/my-restore-plugin"] = "Ceph-DR-Restore"
+			}
+
+			log := p.log.WithFields(logrus.Fields{
+				"Kind":    obj.GetKind(),
+				"Content": obj.UnstructuredContent(),
+			})
+			log.Info("FKSDR Restore Item -- Made Changes!!!")
+		}
 	}
 
-	annotations["velero.io/my-restore-plugin"] = "1"
+	log = p.log.WithFields(logrus.Fields{
+		"TonyContent": obj.Object,
+		"TonyKind":    obj.GetKind(),
+	})
 
-	metadata.SetAnnotations(annotations)
+	log.Info("FKSDR After Restore Item------")
 
-	return velero.NewRestoreItemActionExecuteOutput(input.Item), nil
+	return velero.NewRestoreItemActionExecuteOutput(obj), nil
 }

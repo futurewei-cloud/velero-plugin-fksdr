@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PKG := github.com/vmware-tanzu/velero-plugin-example
-BIN := velero-plugin-example
+PKG := github.com/ljtbbt/fksdr-plugin
+BIN := fksdr-plugin
 
-REGISTRY ?= velero
-IMAGE    ?= $(REGISTRY)/velero-plugin-example
+REGISTRY ?= ljtbbt
+IMAGE    ?= $(REGISTRY)/fksdr-plugin
 VERSION  ?= master 
 
 GOOS   ?= $(shell go env GOOS)

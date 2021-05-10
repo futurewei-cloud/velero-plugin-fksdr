@@ -71,6 +71,8 @@ func (f *FileObjectStore) PutObject(bucket string, key string, body io.Reader) e
 	log.Infof("Writing to file")
 	_, err = io.Copy(file, body)
 
+	file.Sync()
+
 	log.Infof("Done")
 	return err
 }
@@ -127,7 +129,7 @@ func (f *FileObjectStore) ListCommonPrefixes(bucket, prefix, delimiter string) (
 
 	var dirs []string
 	for _, info := range infos {
-		if info.IsDir() {
+		if info.IsDir() && info.Name() != "lost+found" {
 			dirs = append(dirs, info.Name())
 		}
 	}
@@ -152,7 +154,9 @@ func (f *FileObjectStore) ListObjects(bucket, prefix string) ([]string, error) {
 
 	var objects []string
 	for _, info := range infos {
-		objects = append(objects, filepath.Join(prefix, info.Name()))
+		if info.Name() != "lost+found" {
+			objects = append(objects, filepath.Join(prefix, info.Name()))
+		}
 	}
 
 	return objects, nil
@@ -203,7 +207,7 @@ func (f *FileObjectStore) CreateSignedURL(bucket, key string, ttl time.Duration)
 	return "", errors.New("CreateSignedURL is not supported for this plugin")
 }
 
-const defaultRoot = "/tmp/backups"
+const defaultRoot = "/"
 
 func getRoot() string {
 	root := os.Getenv("ARK_FILE_OBJECT_STORE_ROOT")
